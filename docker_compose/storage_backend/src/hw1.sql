@@ -36,10 +36,12 @@ SELECT
 FROM public.ratings
 GROUP BY userId
 HAVING AVG(rating) > 3.5
+ORDER BY AVG(rating) DESC
 LIMIT 10;
 
 --- 4.1 Подзапросы: достать 10 imbdId из links у которых средний рейтинг больше 3.5. 
 --- Нужно подсчитать средний рейтинг по все пользователям, которые попали под условие - то есть в ответе должно быть одно число.
+--- Комментарий: поскольку у каждого movied отношение к imdbid как 1:1, то для расчетов можно обойтись без links,  
 
 SELECT AVG(avg_rating) as avg_rating_from_selected_users
 
