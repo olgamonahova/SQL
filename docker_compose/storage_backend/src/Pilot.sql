@@ -1,19 +1,25 @@
+WITH top_rated
+AS (
 
----Простой пример - функция ROW_NUMBER(). Эта функция нумерует строки внутри окна.
----Пронумеруем контент для каждого пользователя в порядке убывания рейтингов.
-
-
-SELECT
-  userId, movieId, rating,
-  ROW_NUMBER() OVER (PARTITION BY userId ORDER BY rating DESC) as movie_rank
-FROM (
-    SELECT DISTINCT
-        userId, movieId, rating
+---Запрос 1
+    SELECT
+        movieid,
+        AVG(rating) as avg_rating
     FROM ratings
-    WHERE userId <>1 LIMIT 1000
-) as sample
-ORDER BY
-    userId,
-    rating DESC,
-    movie_rank
-LIMIT 20;
+    GROUP BY movieid
+    HAVING COUNT(rating)>50
+    ORDER BY AVG(rating) DESC, movieid ASC
+    LIMIT 150)
+
+---Запрос 2
+SELECT r.movieid,k.tags
+INTO top_rated_tags
+
+FROM
+
+    (SELECT * from top_rated) as r
+    LEFT JOIN
+    (SELECT * from keywords) as k
+    ON r.movieid = k.movieid
+
+\copy (SELECT * FROM top_rated_tags) TO 'data/top_rated_tags.tsv' DELIMETER E'\t';
