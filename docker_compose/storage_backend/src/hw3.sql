@@ -1,4 +1,4 @@
-SELECT ('ФИО: капитан Америка');
+SELECT ('ФИО: Монахова Ольга');
 
 -- ЗАПРОС 1 - самые популярные фильмы
 SELECT movieId, AVG(rating) FROM ratings GROUP BY 1 LIMIT 10;
