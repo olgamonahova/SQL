@@ -1,10 +1,24 @@
-SELECT ('ФИО: капитан Америка');
+SELECT ('ФИО: Монахова Ольга');
 
 -- спользуя функцию определения размера таблицы, вывести top-5 самых больших таблиц базы
 
-SELECT table_name FROM information_schema.tables LIMIT 1;
+SELECT table_name FROM information_schema.tables LIMIT 5;
 
 -- array_agg: собрать в массив все фильмы, просмотренные пользователем (без повторов)
+REATE OR REPLACE FUNCTION
+    array_agg(movieid bigint)
+RETURNS  AS
+$$
+    BEGIN RETURN
+        CONCAT(
+            CAST('http://www.imdb.com/' as VARCHAR), CAST(imdb_id as VARCHAR)
+        ) ;
+    END;
+$$
+LANGUAGE plpgsql;
+
+
+
 SELECT userID, array_agg(movieId) as user_views FROM ratings WHERE userID=1;
 
 -- таблица user_movies_agg, в которую сохраните результат предыдущего запроса

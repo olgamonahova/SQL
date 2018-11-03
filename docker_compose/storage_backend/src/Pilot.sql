@@ -1,25 +1,44 @@
-WITH top_rated
-AS (
+CREATE RULE ratings_insert_2 AS ON INSERT TO ratings_parted
+WHERE ( userId % 2 = 0 )
+DO INSTEAD INSERT INTO ratings_parted_2 VALUES ( NEW.* );
 
----Запрос 1
-    SELECT
-        movieid,
-        AVG(rating) as avg_rating
+CREATE RULE ratings_insert_3 AS ON INSERT TO ratings_parted
+WHERE ( userId % 2 <> 0 )
+DO INSTEAD INSERT INTO ratings_parted_3 VALUES ( NEW.* );
+
+
+INSERT INTO ratings_parted (
+    SELECT *
     FROM ratings
-    GROUP BY movieid
-    HAVING COUNT(rating)>50
-    ORDER BY AVG(rating) DESC, movieid ASC
-    LIMIT 150)
+    WHERE userid=3
+);
 
----Запрос 2
-SELECT r.movieid,k.tags
-INTO top_rated_tags
 
-FROM
+INSERT INTO ratings_parted (
+    SELECT *
+    FROM ratings
+    WHERE userid=6
+);
 
-    (SELECT * from top_rated) as r
-    LEFT JOIN
-    (SELECT * from keywords) as k
-    ON r.movieid = k.movieid
+-- создаем таблицу, у которой значения являются массивами
+CREATE TABLE holiday_picnic (
+     holiday varchar(50), -- строковое значение
+     sandwich text[], -- массив
+     side text[] [], -- многомерный массив
+     dessert text ARRAY, -- массив
+     beverage text ARRAY[4] -- массив из 4-х элементов
+);
 
-\copy (SELECT * FROM top_rated_tags) TO 'data/top_rated_tags.tsv' DELIMETER E'\t';
+-- вставляем значения массивов в таблицу
+INSERT INTO holiday_picnic VALUES
+     ('Labor Day',
+     '{"roast beef","veggie","turkey"}',
+     '{
+        {"potato salad","green salad"},
+        {"chips","crackers"}
+     }',
+     '{"fruit cocktail","berry pie","ice cream"}',
+     '{"soda","juice","beer","water"}'
+     );
+
+SELECT sandwich from holiday_picnic;
