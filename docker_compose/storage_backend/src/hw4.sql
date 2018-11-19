@@ -88,19 +88,48 @@ from
     (SELECT
     *
     from
-    user_movies_agg as T1
+    user_movieSELECT * FROM common_user_views_arr_len;s_agg as T1
     CROSS JOIN user_movies_agg2 as T2
     WHERE T1.userid <> T2.userid2) as agg;
 
+
+--- сохраним длину массива в отдельный столбец
+
+DROP TABLE IF EXISTS common_user_views_arr_len;
+
+SELECT t.*, array_length(t.crossed_arr,1) as arr_len
+INTO common_user_views_arr_len
+FROM common_user_views as t;
+
+
+
+SELECT * FROM common_user_views_arr_len;
+
+--проверка выборки
+SELECT * FROM common_user_views_arr_len WHERE u1 = 94, arr_len <> 0 ORDER BY arr_len DESC;
+
+WITH tmp AS (
+SELECT *, ROW_NUMBER() OVER (PARTITION BY t.u1 ORDER BY arr_len DESC) as cross_rank
+FROM common_user_views_arr_len as t
+WHERE arr_len <> 0)
+
+SELECT * INTO tmp2 FROM tmp
+WHERE tmp.cross_rank =1;
+
+
+DROP TABLE IF EXISTS tmp2;
+
+SELECT * FROM tmp2 LIMIT 1;
 
 -- выбор TOP 10 пар с пересечениями
 
 DROP TABLE IF EXISTS top10crossed;
 
-SELECT tmp.* , array_length(tmp.crossed_arr,1) as arr_length INTO top10crossed
-FROM common_user_views as tmp
-WHERE array_length(tmp.crossed_arr,1) >0
-ORDER BY arr_length DESC LIMIT 10;
+SELECT * INTO top10crossed
+FROM tmp2
+ORDER BY tmp2.arr_len DESC LIMIT 10;
+
+SELECT u1, arr_len FROM top10crossed;
 
 
 -- Оберните запрос в CTE и примените к парам <ar1, ar2> функцию CROSS_ARR, которую вы создали
@@ -117,6 +146,8 @@ ORDER BY arr_length DESC LIMIT 10;
 --SELECT * FROM common_user_views LIMIT 3;
 
 
+
+
 -- Создайте по аналогии с cross_arr функцию diff_arr, которая вычитает один массив из другого.
 -- Подсказка: используйте оператор SQL EXCEPT.
 --CREATE OR REPLACE FUNCTION diff_arr (int[], int[]) RETURNS int[] language sql as $FUNCTION$ тело_функции ; $FUNCTION$;
@@ -131,7 +162,7 @@ as $FUNCTION$
         EXCEPT
         SELECT UNNEST($2)
      );
-$FUNCTION$;
+$FUNCTION$;db.posts.find({author: ObjectId("5b571bf081d67789509607f1")})
 
 -- создаем рекомендации для просмотра, что видел u2 и не видел u1
 

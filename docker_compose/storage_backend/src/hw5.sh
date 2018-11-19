@@ -8,9 +8,7 @@
 
 # в файле agg.js три задачи
 # - подсчитайте число элементов в созданной коллекции
-
 db.tags.count()
-
 
 # - подсчитайте число фильмов с конкретным тегом - `woman`
 db.tags.find({name: "woman"}).count()
@@ -24,4 +22,4 @@ db.tags.aggregate(
                        { $limit: 3 }
                      ])
 
-/usr/bin/mongo $APP_MONGO_HOST:$APP_MONGO_PORT/movies /home/agg.js
+/usr/bin/mongo $APP_MONGOuse _HOST:$APP_MONGO_PORT/movies /home/agg.js

@@ -9,6 +9,7 @@ SELECT ('ФИО: Монахова Ольга');
 
 --- psql --host $APP_POSTGRES_HOST -U postgres -c \
 --- "\\copy keywords FROM '/data/keywords.csv' DELIMITER ',' CSV HEADER"
+--- "\\copy keywords FROM '/data/keywords.csv' DELIMITER ',' CSV HEADER"
 
 
 
@@ -48,6 +49,9 @@ FROM
     ON r.movieid = k.movieid
 
 -- ЗАПРОС 3 - модифицируем ЗАПРОС 2 чтобы сохранить данные в таблицу
+
+
+
 WITH top_rated
 AS (
 
@@ -76,4 +80,7 @@ FROM
 
 --- КОМАНДА ВЫГРУЗКИ ТАБЛИЦЫ В ФАЙЛ
 \copy (SELECT * FROM top_keywords) TO '/data/tags.tsv' DELIMITER E'\t';
+
+
+
 
